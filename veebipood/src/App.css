@@ -1,0 +1,17 @@
+/* CSS on kujundusfail, klassid peavad olema täpselt nagu HTMLs
+klassid peavad algama punktiga ning kood läheb loogeliste sulgude sisse
+*/
+
+.nupp {
+
+}
+
+.pilt {
+  height: 200px;
+  position: relative;
+  border-radius: 20%;
+  left: 70%;
+  bottom: 50%;
+  justify-content: space-evenly;
+
+}

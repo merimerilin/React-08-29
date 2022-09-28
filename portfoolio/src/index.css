@@ -1,0 +1,32 @@
+
+.main-picture{
+height: 200px;
+width: 300px;
+border-radius: 50%;
+
+}
+
+.harry-potter{
+  display: flex;
+  margin-top: 50px;
+  justify-content: space-evenly;
+
+  
+
+
+}
+
+.harry-potter img{
+  height: 200px;
+  width: 150px;
+
+cursor: pointer;
+
+}
+.harry-potter img:hover{
+  scale: 1.1;
+  transition: 0.5s;
+  box-shadow: 0 8px 100px 0px;
+
+
+}
