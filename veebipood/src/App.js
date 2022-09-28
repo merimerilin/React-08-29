@@ -48,6 +48,8 @@ function App() {
 <Route path="poed" element={ <Poed/> } />
 <Route path='vaata-arvuteid'element= {<VaataArvuteid/>}/>
 <Route path='halda'element= {<HaldaTooteid/>} />
+<Route path='muuda/:index'element= {<HaldaTooteid />} />
+<Route path='muuda/:index'element={<MuudaToode/>} />
 
 
 </Routes>
