@@ -10,7 +10,6 @@ function HaldaTooteid() {
   }
   
   
-  
   return ( 
   <div>
     {tooted.map((element,index) =>
