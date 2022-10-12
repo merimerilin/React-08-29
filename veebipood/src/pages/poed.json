@@ -1,1 +1,24 @@
-["Mustamäe", "Õismäe", "Kristiine", "Põhja-Tallinn","kesklinn"][1] = "Kakumäe";
+["Mustamäe", "Õismäe", "Kristiine", "Põhja-Tallinn","kesklinn"]
+[
+  {
+      "nimetus": "Kristiine",
+      "aeg": "9-22",
+      "aadress": "Tulika 7b",
+      "kommentaarid": "",
+      "": ""
+  },
+  {
+      "nimetus": "Mustamäe",
+      "aeg": "10-22",
+      "aadress": "Tammsaare tee 2",
+      "kommentaarid": "asdasd",
+      "": ""
+  },
+  {
+      "nimetus": "Balti jaam",
+      "aeg": "11-00",
+      "aadress": "Niine 12",
+      "kommentaarid": "",
+      "": ""
+  }
+]

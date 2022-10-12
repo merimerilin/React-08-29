@@ -1,5 +1,4 @@
 import { Link, Route, Routes } from 'react-router-dom';
-import Avaleht from './pages/Avaleht';
 import LisaToode from './pages/LisaToode';
 import Meist from './pages/Meist';
 import Ostukorv from './pages/Ostukorv';
@@ -8,6 +7,10 @@ import Poed from './pages/Poed';
 import './App.css';
 import VaataArvuteid from './pages/VaataArvuteid';
 import HaldaTooteid from './pages/HaldaTooteid';
+import MuudaToode from './pages/MuudaToode';
+import YksikToode from './pages/YksikToode';
+import Koduleht from './pages/Koduleht';
+
 
 function App() {
   return (
@@ -40,7 +43,7 @@ function App() {
 
 
 <Routes>
-  <Route path="avalehele" element={ <Avaleht/> } />
+  <Route path="" element={ <Koduleht/>} />
 <Route path="lisa-toode" element={ <LisaToode/> } />
 <Route path="meist" element={ <Meist/> } />
 <Route path="ostukorv" element={ <Ostukorv/> } />
@@ -50,6 +53,9 @@ function App() {
 <Route path='halda'element= {<HaldaTooteid/>} />
 <Route path='muuda/:index'element= {<HaldaTooteid />} />
 <Route path='muuda/:index'element={<MuudaToode/>} />
+<Route path='yksik-toode'element={<YksikToode/>} />
+<Route path='toode/:j2rjekorraNumber'element={<j2rjekorraNumber/>} />
+
 
 
 </Routes>
