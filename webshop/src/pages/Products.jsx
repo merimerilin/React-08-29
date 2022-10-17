@@ -1,90 +1,129 @@
 import productsFromFile from "../data/products.json";
 import Button from "react-bootstrap/Button";
+import Pagination from "react-bootstrap/Pagination";
 import { useState } from "react";
-import Pagination from 'react-bootstrap/Pagination';
+
+// 1. teete kuskil koolitusel/Youtube/Udemys asja kaasa, jätate meelde ja kui on vaja kasutada, siis otsite üles
+// 2. kui teete kuskil suuremas projektis arendust, siis otsite samasugust funktsionaalsust kuskil teises failis
+// 3. otsida Google otsingu abiga kuidas seda teha
+// 4. teete ise peast
+
+// [{},{},{},{}] 301tk KÕIK productsFromFile
+// [{},{},{}] 240tk FILTREERITUD KUJUL categoryProducts
+// [{},{}] 20tk  MIDA NÄITAN KASUTAJALE products
 
 function Products() {
-  
-const [categoryProducts, setCategoryProducts] = useState(productsFromFile);
-const [products, setProducts] = useState(productsFromFile.slice(0,20));
-
-const categories = [...new Set ( productsFromFile.map(element => element.category))]; 
-
-const [activePage, setActivePage] = useState(1);
-let pages = [];
-for (let index = 0; index < categoryProducts.length/20; index++) {
-  pages.push(index+1);
-  
-}
-const sortAZ = () => {
-  products.sort((a,b) => a.name.localeCompare(b.name));
-  setProducts(products.slice());
-}
-const sortZA = () => {
-  products.sort((a,b) => a.name.localeCompare(a.name));
-  setProducts(products.slice());
-}
-const sortPriceAsc = () => {
-  products.sort((a,b) => a.price - b.price);
-  setProducts(products.slice());
-}
-const sortPriceDesc = () => {
-  products.sort((a,b) => a.price - b.price);
-  setProducts(products.slice());
-}
-const sortIdAsc = () => {
-  products.sort((a,b) => a.id - b.id);
-  setProducts(products.slice());
-}
-const sortIdDesc = () => {
-  products.sort((a,b) => a.id - b.id);
-  setProducts(products.slice());
-}
-const showByCategory = (categoryClicked) => {
-  const result = productsFromFile.filter(element => element.category === categoryClicked);
-  setCategoryProducts(result.slice(0,20));
-  setActivePage(1);
-}
+                           
+  const [categoryProducts, setCategoryProducts] = useState(productsFromFile.slice());
+  const [products, setProducts] = useState(productsFromFile.slice(0,20)); 
+  const categories = [...new Set(productsFromFile.map(element => element.category))];
 
 
-const changeActivePage = (pageClicked) => {
-  setActivePage(pageClicked);
-  setProducts(categoryProducts.slice(pageClicked*20-20, pageClicked*20));
-}
+  const [activePage, setActivePage] = useState(1);
+  const pages = [];
+  for (let index = 0; index < categoryProducts.length/20; index++) {
+    pages.push(index + 1);
+  }
 
+  const sortAZ = () => {
+    categoryProducts.sort((a,b) => a.name.localeCompare(b.name));
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }
+
+  const sortZA = () => {
+    categoryProducts.sort((a,b) => b.name.localeCompare(a.name));
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }
+
+  const sortPriceAsc = () => {
+    categoryProducts.sort((a,b) => a.price - b.price);
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }  // a.price
+
+  const sortPriceDesc = () => {
+    categoryProducts.sort((a,b) => b.price - a.price);
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }
+
+  const sortIdAsc = () => {
+    categoryProducts.sort((a,b) => a.id - b.id);
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }
+
+  const sortIdDesc = () => {
+    categoryProducts.sort((a,b) => b.id - a.id);
+    setProducts(categoryProducts.slice(0,20));
+    setActivePage(1);
+  }
+
+  const showByCategory = (categoryClicked) => {
+    const result = productsFromFile.filter(element => element.category === categoryClicked);
+    setCategoryProducts(result);
+    setProducts(result.slice(0,20));
+    setActivePage(1);
+  }
+
+  const changeActivePage = (pageClicked) => {
+    setActivePage(pageClicked);
+    setProducts(categoryProducts.slice(pageClicked*20-20,pageClicked*20));
+  }
+
+  const addToCart = (productClicked) => {
+    let cartLS = localStorage.getItem("cart");
+    cartLS = JSON.parse(cartLS) || [];
+    const index = cartLS.findIndex(element => element.product.id === productClicked.id);
+    if (index === -1) {//kui järjekorranumber on -1, siis järelikult teda pole olemas. kui on olemas, index: 0,1,2
+      cartLS.push({product: productClicked, quantity: 1});
+    } else {
+   
+      cartLS[index].quantity = cartLS[index].quantity + 1;
+    }
+    cartLS = JSON.stringify(cartLS);
+    localStorage.setItem("cart", cartLS);
+  }
 
 
   return ( 
-        <div>
-        <Pagination>
-          {pages.map(number => 
-          <Pagination.Item key={number} onClick={() => changeActivePage(number)}active ={number=== activePage}>
-            {number}
-          </Pagination.Item>)}
-        </Pagination>
-          
-          {categories.map(element=> 
-          <button key={element} onClick={() => showByCategory(element)}>
-            {element}
-            </button>)}
+    <div>
+      <Pagination>
+        {pages.map(number => 
+        <Pagination.Item key={number} onClick={() => changeActivePage(number)} active={number === activePage}>
+          {number}
+        </Pagination.Item>)}
+      </Pagination>
 
-            <div>Tooteid on {categoryProducts.length}tk</div>
+      {categories.map(element => 
+        <button key={element} onClick={() => showByCategory(element)}>
+          {element}
+        </button>)}
+            {/* {activePage*20} / */}
+      <div>Tooteid on {categoryProducts.length} tk</div>
 
-          <button onClick={sortAZ}>Sorteeri A-Z</button>
-          <button onClick={sortZA}>Sorteeri Z-A</button>
-          <button onClick={sortPriceAsc}>Sorteeri Sorteeri hind kasvavalt</button>
-          <button onClick={sortPriceDesc}>Sorteeri hind kahanevalt</button>
-          <button onClick={sortIdAsc}>Sorteeri vanemad enne</button>
-          <button onClick={sortIdDesc}>Sorteeri uuemad enne</button>
-          {products.map(element =>
+      <div>
+        <button onClick={sortAZ}>Sorteeri A-Z</button>
+        <button onClick={sortZA}>Sorteeri Z-A</button>
+        <button onClick={sortPriceAsc}>Sorteeri hind kasvavalt</button>
+        <button onClick={sortPriceDesc}>Sorteeri hind kahanevalt</button>
+        <button onClick={sortIdAsc}>Sorteeri vanemad enne</button>
+        <button onClick={sortIdDesc}>Sorteeri uuemad enne</button>
+      </div>
+
+      {products.map(element => 
           <div key={element.id}>
-          <img src={element.image} alt="" />
-          <div>{element.name}</div>
-          <div>{element.price}</div>
-          <Button variant= "success">Lisa ostukorvi</Button>
-        </div>
-      )}
-  </div> );
+            <img src={element.image} alt="" />
+            <div>{element.name}</div>
+            <div>{element.price}</div>
+  {/* element ---> {"id":7618,"image":"httpss-l225.webp","name":"Case For iPhone","price":5,"description":"Case For iPhone 14 13 12 11 Pro Max Clear Plating Shockproof Soft Silicone Cover","category":"luxury","active":true} */}
+            <Button onClick={() => addToCart(element)} variant="success">Lisa ostukorvi</Button>
+          </div>
+        )}
+
+    </div> );
 }
 
 export default Products;
