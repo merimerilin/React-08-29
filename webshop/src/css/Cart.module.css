@@ -34,13 +34,31 @@
 }
 
 .quantity {
-  width: 50px;
+  display: flex;
+  justify-content: space-between;
+  height: 37px;
+  width: 110px;
+  padding: 2px;
+  border-radius: 17px;
+  border: 1px solid lightgray;
 }
 
 .sum {
-  width: 50px;
+  width: 80px;
+}
+
+.button:hover {
+opacity: 0.1;
+cursor: pointer;
 }
 
 .button {
+  width: 30px;
+  height: 30px;
+  }
 
-}
+  .cart_bottom {
+    text-align: right;
+    margin-right: 10%;
+    
+  }
