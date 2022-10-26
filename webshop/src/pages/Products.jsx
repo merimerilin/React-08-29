@@ -2,21 +2,34 @@ import productsFromFile from "../data/products.json";
 import Button from "react-bootstrap/Button";
 import Pagination from "react-bootstrap/Pagination";
 import { useState } from "react";
+import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
+import { useEffect } from "react";
 
-// 1. teete kuskil koolitusel/Youtube/Udemys asja kaasa, jätate meelde ja kui on vaja kasutada, siis otsite üles
-// 2. kui teete kuskil suuremas projektis arendust, siis otsite samasugust funktsionaalsust kuskil teises failis
-// 3. otsida Google otsingu abiga kuidas seda teha
-// 4. teete ise peast
-
-// [{},{},{},{}] 301tk KÕIK productsFromFile
-// [{},{},{}] 240tk FILTREERITUD KUJUL categoryProducts
-// [{},{}] 20tk  MIDA NÄITAN KASUTAJALE products
 
 function Products() {
                            
   const [categoryProducts, setCategoryProducts] = useState(productsFromFile.slice());
   const [products, setProducts] = useState(productsFromFile.slice(0,20)); 
   const categories = [...new Set(productsFromFile.map(element => element.category))];
+
+
+  useEffect(() => {
+    const api = new WooCommerceRestApi({
+      url: "http://example.com",
+      consumerKey: "ck_67891dc82a4cd4932826cc75287979eea0a43b55",
+      consumerSecret: "cs_aaa9a7b7801919086483d954c1b5009b839d3448",
+      version: "wc/v3"
+    });
+    api.get("products", {
+      per_page: 20, 
+    })
+      .then((response) => {
+        // Successful request
+        setProducts(response.data);
+        setCategoryProducts(response.data);
+        setCategories([...new Set(response.data.map(element => element.categories[0].name))])
+      })
+  }, []);
 
 
   const [activePage, setActivePage] = useState(1);

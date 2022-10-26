@@ -1,21 +1,20 @@
-import { useRef, useEffect, useState } from "react";
 // .. <- ühe kausta võrra üles (pages kaustast välja)
 // css kaust
 // ja sealt Cart.module.css
 import styles from "../css/Cart.module.css";
-
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Cart() {
   const [cart, setCart] = useState( JSON.parse(localStorage.getItem("cart")) || [] );
   const [parcelMachines, setParcelMachines] = useState([]);
   const pmRef = useRef();
 
-
-  //uef
+  // uef
   useEffect(() => {
     fetch("https://www.omniva.ee/locations.json")
-    .then(res=> res.json())
-    .then(json => setParcelMachines(json))
+      .then(res => res.json())
+      .then(json => setParcelMachines(json))
   }, []);
 
   const remove = (productIndex) => {
@@ -42,9 +41,36 @@ function Cart() {
     cart.forEach(element => cartSum = cartSum + element.product.price * element.quantity);
     return cartSum.toFixed(2);
   }
-  const sendOrder = () => {
-    console.log(pmRef.current.value);
-    console.log(cart);
+
+  // const sendOrder = () => {
+  //   console.log(pmRef.current.value);
+  //   console.log(cart);
+  // }
+
+  const pay = () => {
+
+    const data = {
+      "api_username": "92ddcfab96e34a5f",
+      "account_name": "EUR3D1",
+      "amount": calculateCartSum(),
+      "order_reference": Math.random() * 999999,
+      "nonce": "a9b7f7easda2123" + Math.random() * 999999 + new Date(),
+      "timestamp": new Date(),
+      "customer_url": "https://react-09-22-v.web.app"
+      }
+
+    fetch("https://igw-demo.every-pay.com/api/v4/payments/oneoff",{
+      "method": "POST",
+      "body": JSON.stringify(data),
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic OTJkZGNmYWI5NmUzNGE1Zjo4Y2QxOWU5OWU5YzJjMjA4ZWU1NjNhYmY3ZDBlNGRhZA=="
+      }
+    }).then(res => res.json())
+    .then(json => window.location.href = json.payment_link );
+      // payment_link ---> rida 11 tagastuses
+      // json ise ongi tagastus
+      // window.location.href <------ JavaScipti sissekirjutatud viis kuidas URLi muuta
   }
 
   return ( 
@@ -55,28 +81,45 @@ function Cart() {
           <div className={styles.name}>{element.product.name}</div>
           <div className={styles.price}>{element.product.price} €</div>
           <div className={styles.quantity}>
-          <img className={styles.button} onClick={() => decreaseQuantity(index)}src={require("../images/minus.png")} alt="" />
-          <div> {element.quantity}tk</div>
-          <img className={styles.button} onClick={() => increaseQuantity(index)} src={require("../images/add.png")} alt="" />
+            <img className={styles.button} onClick={() => decreaseQuantity(index)} src={require("../images/minus.png")} alt="" />
+            <div>{element.quantity} tk </div>
+            <img className={styles.button} onClick={() => increaseQuantity(index)} src={require("../images/add.png")} alt="" />
           </div>
           <div className={styles.sum}>{ (element.product.price * element.quantity).toFixed(2) } €</div>
-          <button onClick={() => remove(index)}>x</button>
           <img className={styles.button} onClick={() => remove(index)} src={require("../images/delete.png")} alt="" />
         </div>)}
-
-      <div className={styles.cart_bottom}>
+    
+    { cart.length > 0 && 
+    <div className={styles.cart__bottom}>
       <div>Kokku: {calculateCartSum()} €</div>
 
-       <select ref={pmRef}>{parcelMachines
-       .filter(element => element.A0_NAME === "EE")
-      .map(element=>
-       <option key={element.NAME}>{element.NAME}</option>)}
+      <select ref={pmRef}>{parcelMachines
+                .filter(element => element.A0_NAME === "EE")
+                .map(element => 
+          <option key={element.NAME}>{element.NAME}</option>)}
       </select>
 
-      <button onClick={sendOrder}>Vormista tellimus</button>
-    </div>
+      <button onClick={pay}>Vormista tellimus</button>
+    </div>}
+    { cart.length === 0 && 
+      <div>
+        <div>Ostukorvis pole tooteid.</div>
+        <div>Vajuta <Link to="/tooted">siia</Link>, et jätkata ostlemist.</div>
+      </div> }
 
     </div> );
 }
 
 export default Cart;
+
+// MeetFrank
+// LinkedIn
+// Otse ettevõtete e-mailidele kirjutamine
+// Cvkeskus/cvonline/cv
+
+
+// Lõpuprojekt: Tehtud Reactis
+// 1. Ise välja mõeldud projekt
+// 2. Youtubest/Udemyst mõne koolitusseeria (videod)
+// 3. Webshopist edasiarendus
+// 4. Proovitöö ettevõttest
