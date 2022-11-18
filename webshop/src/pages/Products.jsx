@@ -1,17 +1,13 @@
-
 import Button from "react-bootstrap/Button";
 import Pagination from "react-bootstrap/Pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
-import { useEffect } from "react";
-
 
 function Products() {
-  const [dbProducts, setDbProducts ] = useState ([]);                        
-  const [categoryProducts, setCategoryProducts] = useState([]);
-  const [products, setProducts] = useState([]); 
+  const [dbProducts, setDbProducts] = useState([]);          // SIIN SEES on kõik andmebaasitooted 300tk
+  const [categoryProducts, setCategoryProducts] = useState([]); // SIIN SEES on ühe kategooria lõikes tooted 120tk
+  const [products, setProducts] = useState([]);   // SIIN SEES on ühe kategooria ühe lehekülje tooted 20tk
   const [categories, setCategories] = useState([]);
-
 
   useEffect(() => {
     const api = new WooCommerceRestApi({
@@ -24,16 +20,15 @@ function Products() {
       }
     });
     api.get("products", {
-      per_page: 100, 
+      per_page: 100, // 100 products per page
     })
       .then((response) => {
-        // Successful request
-        setProducts(response.data);
+        setDbProducts(response.data);
+        setProducts(response.data.slice(0,3));
         setCategoryProducts(response.data);
         setCategories([...new Set(response.data.map(element => element.categories[0].name))])
       })
   }, []);
-
 
   const [activePage, setActivePage] = useState(1);
   const pages = [];
@@ -77,6 +72,7 @@ function Products() {
     setActivePage(1);
   }
 
+ 
   const showByCategory = (categoryClicked) => {
     const result = dbProducts.filter(element => element.categories[0].name === categoryClicked);
     setCategoryProducts(result);
@@ -93,16 +89,14 @@ function Products() {
     let cartLS = localStorage.getItem("cart");
     cartLS = JSON.parse(cartLS) || [];
     const index = cartLS.findIndex(element => element.product.id === productClicked.id);
-    if (index === -1) {
+    if (index === -1) {//kui järjekorranumber on -1, siis järelikult teda pole olemas. kui on olemas, index: 0,1,2
       cartLS.push({product: productClicked, quantity: 1});
     } else {
-   
       cartLS[index].quantity = cartLS[index].quantity + 1;
     }
     cartLS = JSON.stringify(cartLS);
     localStorage.setItem("cart", cartLS);
   }
-
 
   return ( 
     <div>
@@ -117,7 +111,7 @@ function Products() {
         <button key={element} onClick={() => showByCategory(element)}>
           {element}
         </button>)}
-            {/* {activePage*3} / */}
+            {/* {activePage*20} / */}
       <div>Tooteid on {categoryProducts.length} tk</div>
 
       <div>
@@ -130,7 +124,7 @@ function Products() {
       </div>
 
       {products.map(element => 
-          <div key={element.id}>
+          <div className="product" key={element.id}>
             { element.images[0] && <img src={element.images[0].src} alt="" />}
             <div>{element.name}</div>
             <div>{element.price}</div>

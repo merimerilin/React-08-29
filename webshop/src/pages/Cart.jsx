@@ -1,9 +1,8 @@
-// .. <- ühe kausta võrra üles (pages kaustast välja)
-// css kaust
-// ja sealt Cart.module.css
 import styles from "../css/Cart.module.css";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
+// headless wordpress   / headless woocommerce   / headless cms
 
 function Cart() {
   const [cart, setCart] = useState( JSON.parse(localStorage.getItem("cart")) || [] );
@@ -42,18 +41,38 @@ function Cart() {
     return cartSum.toFixed(2);
   }
 
-  // const sendOrder = () => {
-  //   console.log(pmRef.current.value);
-  //   console.log(cart);
-  // }
+  const sendOrder = () => {
+    console.log(pmRef.current.value);
+    console.log(cart);
+    const api = new WooCommerceRestApi({
+      url: "http://localhost/wordpress/",
+      consumerKey: "ck_67891dc82a4cd4932826cc75287979eea0a43b55",
+      consumerSecret: "cs_aaa9a7b7801919086483d954c1b5009b839d3448",
+      version: "wc/v3",
+      queryStringAuth: true,
+      axiosConfig: {
+        headers: {'Content-Type': 'application/json'},
+      }
+    });
+    //               noole järel välimised loogelised sulud on funktsiooni tähistus
+    const woocommerceCart = cart.map(element => { 
+      return {product_id: element.product.id, quantity: element.quantity}
+    });
+    api.post("orders", {"line_items": woocommerceCart})
+      // .then(res => console.log(res))
+      .then(res => pay(res.data.id))
 
-  const pay = () => {
+    // [  {product: {id: 13, name: "ads"}, quantity: 2}, ....  ]
+    // [  {product_id: 13, quantity: 2}, {product_id: 56, quantity: 5}  ]
+  }
+
+  const pay = (orderId) => {
 
     const data = {
       "api_username": "92ddcfab96e34a5f",
       "account_name": "EUR3D1",
       "amount": calculateCartSum(),
-      "order_reference": Math.random() * 999999,
+      "order_reference": orderId,
       "nonce": "a9b7f7easda2123" + Math.random() * 999999 + new Date(),
       "timestamp": new Date(),
       "customer_url": "https://react-09-22-v.web.app"
@@ -77,6 +96,7 @@ function Cart() {
     <div>
       {cart.map((element, index) => 
         <div key={index} className={styles.product}>
+          {/* <img className={styles.image} src={element.product.image} alt="" /> */}
           { element.product.images[0] && <img className={styles.image} src={element.product.images[0].src} alt="" />}
           <div className={styles.name}>{element.product.name}</div>
           <div className={styles.price}>{element.product.price} €</div>
@@ -86,7 +106,7 @@ function Cart() {
             <img className={styles.button} onClick={() => increaseQuantity(index)} src={"/images/add.png"} alt="" />
           </div>
           <div className={styles.sum}>{ (element.product.price * element.quantity).toFixed(2) } €</div>
-          <img className={styles.button} onClick={() => remove(index)} src={"/images/delete.png"} alt="" />
+          <img className={styles.button} onClick={() => remove(index)} src={"/images/remove.png"} alt="" />
         </div>)}
     
     { cart.length > 0 && 
@@ -99,7 +119,7 @@ function Cart() {
           <option key={element.NAME}>{element.NAME}</option>)}
       </select>
 
-      <button onClick={pay}>Vormista tellimus</button>
+      <button onClick={sendOrder}>Vormista tellimus</button>
     </div>}
     { cart.length === 0 && 
       <div>
